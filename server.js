@@ -14,7 +14,8 @@ app.get('/api/test-github', (req, res) => {
     method: 'GET',
     headers: {
       'User-Agent': 'ThinkPad-Migration-App'
-    }
+    },
+    timeout: 10000 // 10 second timeout
   };
 
   const request = https.request(options, (response) => {
@@ -25,10 +26,11 @@ app.get('/api/test-github', (req, res) => {
     });
 
     response.on('end', () => {
+      const isSuccess = response.statusCode >= 200 && response.statusCode < 300;
       res.json({
-        success: true,
+        success: isSuccess,
         status: response.statusCode,
-        message: 'GitHub API is reachable',
+        message: isSuccess ? 'GitHub API is reachable' : 'GitHub API returned an error',
         zen: data,
         timestamp: new Date().toISOString()
       });
@@ -40,6 +42,16 @@ app.get('/api/test-github', (req, res) => {
       success: false,
       message: 'Failed to connect to GitHub API',
       error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  request.on('timeout', () => {
+    request.destroy();
+    res.status(504).json({
+      success: false,
+      message: 'Request to GitHub API timed out',
+      error: 'Connection timeout after 10 seconds',
       timestamp: new Date().toISOString()
     });
   });
