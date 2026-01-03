@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Connectivity Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .test-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-button:active {
+            transform: translateY(0);
+        }
+
+        .test-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .result-container.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .success .result-title {
+            color: #155724;
+        }
+
+        .error .result-title {
+            color: #721c24;
+        }
+
+        .result-details {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .success .result-details {
+            color: #155724;
+        }
+
+        .error .result-details {
+            color: #721c24;
+        }
+
+        .zen-quote {
+            font-style: italic;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+
+        .info-box h3 {
+            color: #004085;
+            margin-bottom: 5px;
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 GitHub Connectivity Test</h1>
+        <p class="subtitle">ThinkPad Migration Tool</p>
+
+        <div class="info-box">
+            <h3>What does this test?</h3>
+            <p>This tool verifies that the application can successfully connect to GitHub's API, which is essential for migration operations.</p>
+        </div>
+
+        <button id="testButton" class="test-button" onclick="testGitHubConnection()">
+            Test GitHub Connection
+        </button>
+
+        <div id="resultContainer" class="result-container">
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-details" id="resultDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testGitHubConnection() {
+            const button = document.getElementById('testButton');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultDetails = document.getElementById('resultDetails');
+
+            // Disable button and show loading state
+            button.disabled = true;
+            button.innerHTML = 'Testing Connection<span class="loading"></span>';
+
+            // Hide previous results
+            resultContainer.style.display = 'none';
+            resultContainer.className = 'result-container';
+
+            try {
+                const response = await fetch('/api/test-github');
+                const data = await response.json();
+
+                // Show results
+                resultContainer.style.display = 'block';
+
+                if (data.success) {
+                    resultContainer.classList.add('success');
+                    resultTitle.textContent = '✅ Connection Successful!';
+                    resultDetails.innerHTML = `
+                        <p><strong>Status:</strong> GitHub API is reachable</p>
+                        <p><strong>HTTP Status:</strong> ${data.status}</p>
+                        <div class="zen-quote">
+                            <strong>GitHub Zen:</strong><br>
+                            "${data.zen}"
+                        </div>
+                        <p class="timestamp">Tested at: ${new Date(data.timestamp).toLocaleString()}</p>
+                    `;
+                } else {
+                    resultContainer.classList.add('error');
+                    resultTitle.textContent = '❌ Connection Failed';
+                    resultDetails.innerHTML = `
+                        <p><strong>Error:</strong> ${data.message}</p>
+                        <p><strong>Details:</strong> ${data.error}</p>
+                        <p class="timestamp">Tested at: ${new Date(data.timestamp).toLocaleString()}</p>
+                    `;
+                }
+            } catch (error) {
+                resultContainer.style.display = 'block';
+                resultContainer.classList.add('error');
+                resultTitle.textContent = '❌ Connection Failed';
+                resultDetails.innerHTML = `
+                    <p><strong>Error:</strong> Unable to reach the server</p>
+                    <p><strong>Details:</strong> ${error.message}</p>
+                    <p class="timestamp">Tested at: ${new Date().toLocaleString()}</p>
+                `;
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.innerHTML = 'Test GitHub Connection';
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testGitHubConnection, 500);
+        });
+    </script>
+</body>
+</html>
