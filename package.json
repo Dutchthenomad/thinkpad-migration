@@ -1,0 +1,16 @@
+{
+  "name": "thinkpad-migration",
+  "version": "1.0.0",
+  "description": "GitHub connectivity test application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": ["github", "connectivity", "test"],
+  "author": "Dutchthenomad",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
